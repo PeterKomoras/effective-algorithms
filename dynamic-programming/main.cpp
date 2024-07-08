@@ -1,40 +1,56 @@
-def f():
-
-    n = int(input())
-
-    arr = input().split()
-    arr_sum = 0
-
-    for i in range(len(arr)):
-        arr[i] = int(arr[i])
-        arr_sum += arr[i]
-
-    if arr_sum % 3 != 0:
-        return 0
-
-    x = 0
-    third = 0
-    res = 0
-
-    if arr_sum == 0:
-        for i in range(len(arr) -1):
-            x += arr[i]
-            #print(arr[:i+1], " ", x, " ", third, " ", res, " ")
-            if x == 0:
-                third += 1
-                if third > 1:
-                    res += third-1
-        return res
-
-    for i in range(len(arr) -1):
-        x += arr[i]
-        #print(arr[:i+1], " ", x, " ", third, " ", res, " ")
-        if x == arr_sum / 3:
-            third += 1
-        if x == arr_sum / 3 * 2:
-            res += third
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
 
-    return res
-            
-print(f())
+using namespace std;
+
+
+int main() {
+    int n,m,c;
+    vector<int> beads, beauty;
+
+    // Read input
+    cin >> n >> m;
+
+    beads.resize(n);
+    for (int i = 0; i < n; i++) {
+        cin >> beads[i];
+    }
+
+
+    beauty.resize(m + 1);
+    for (int i = 1; i <= m; i++) {
+        cin >> beauty[i];
+    }
+
+    cin >> c;
+
+
+
+    vector<long> dp(n);
+    vector<int> last_equal(m+1, -1);
+    
+
+    // first iteration
+    dp[0] = c;
+    last_equal[beads[0]] = 0;
+    for (int i = 1; i < n; i++) {
+        if (last_equal[beads[i]] == -1) // The first occurence of a color of the bead at i
+            dp[i] = dp[i-1] + c;
+        else if (beads[i] == beads[i-1])
+            dp[i] = dp[i-1] + beauty[beads[i]];
+        else 
+            dp[i] = max(
+                dp[last_equal[beads[i]]] + beauty[beads[i]],
+                dp[i-1] + c);
+
+        last_equal[beads[i]] = i;
+    }
+
+    cout << dp[n-1] << "\n";
+    
+
+
+    return 0;
+}
